@@ -110,7 +110,19 @@ class KMeans:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        self.labels = np.random.randint(self.K, size=self.X.shape[0])
+        array = []
+        
+        for i in self.X:
+            min_dist = 100000000000
+            n = -1
+            for x, j in enumerate(self.centroids):
+                dist = np.sqrt(pow(i[0]-j[0], 2) + pow(i[1]-j[1], 2) + pow(i[2]-j[2], 2))
+                if dist < min_dist:
+                    min_dist = dist
+                    n = x
+            array.append(n)
+                    
+        self.labels = array
 
 
     def get_centroids(self):
@@ -176,7 +188,6 @@ def distance(X, C):
     Args:
         X (numpy array): PxD 1st set of data points (usually data points)
         C (numpy array): KxD 2nd set of data points (usually cluster centroids points)
-
     Returns:
         dist: PxK numpy array position ij is the distance between the
         i-th point of the first set an the j-th point of the second set
@@ -204,7 +215,6 @@ def get_colors(centroids):
     for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
     Args:
         centroids (numpy array): KxD 1st set of data points (usually centroid points)
-
     Returns:
         labels: list of K labels corresponding to one of the 11 basic colors
     """

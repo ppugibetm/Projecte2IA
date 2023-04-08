@@ -170,33 +170,47 @@ class KMeans:
         pass
 
 
-    def distance(X, C):
-        """
-        Calculates the distance between each pixel and each centroid
-        Args:
-            X (numpy array): PxD 1st set of data points (usually data points)
-            C (numpy array): KxD 2nd set of data points (usually cluster centroids points)
+def distance(X, C):
+    """
+    Calculates the distance between each pixel and each centroid
+    Args:
+        X (numpy array): PxD 1st set of data points (usually data points)
+        C (numpy array): KxD 2nd set of data points (usually cluster centroids points)
 
-        Returns:
-            dist: PxK numpy array position ij is the distance between the
-            i-th point of the first set an the j-th point of the second set
-        """
+    Returns:
+        dist: PxK numpy array position ij is the distance between the
+        i-th point of the first set an the j-th point of the second set
+    """
+    dist = []
         
+    for i in X:
+        aux_dist = []
+        for j in C:
+            aux_dist.append(np.sqrt(pow(i[0]-j[0], 2) + pow(i[1]-j[1], 2) + pow(i[2]-j[2], 2)))
+        dist.append(aux_dist)
+        
+    dist_ = np.array(dist)
+    shapeX = X.shape
+    shapeC = C.shape
+    
+    dist_ = np.reshape(dist_, (shapeX[0], shapeC[0]))
+        
+    return dist_
         
 
 
-    def get_colors(centroids):
-        """
-        for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
-        Args:
-            centroids (numpy array): KxD 1st set of data points (usually centroid points)
+def get_colors(centroids):
+    """
+    for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
+    Args:
+        centroids (numpy array): KxD 1st set of data points (usually centroid points)
 
-        Returns:
-            labels: list of K labels corresponding to one of the 11 basic colors
-        """
+    Returns:
+        labels: list of K labels corresponding to one of the 11 basic colors
+    """
 
-        #########################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #########################################################
-        return list(utils.colors)
+    #########################################################
+    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+    ##  AND CHANGE FOR YOUR OWN CODE
+    #########################################################
+    return list(utils.colors)

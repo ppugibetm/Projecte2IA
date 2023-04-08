@@ -133,8 +133,20 @@ class KMeans:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
-        pass
-
+        self.old_centroids = self.centroids
+        new_centroids = []
+        
+        
+        for i in range(len(self.X)):
+            aux_array = []
+            aux_array.append(self.X[i])
+        
+        new_centroids.append(aux_array)
+        
+        for i in range(len(new_centroids)):
+            new_centroids[i] = np.average(np.array(new_centroids[i], 0))
+        
+        self.centroids = new_centroids
 
     def converges(self):
         """

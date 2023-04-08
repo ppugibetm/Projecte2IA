@@ -1,5 +1,5 @@
-__authors__ = 'TO_BE_FILLED'
-__group__ = 'TO_BE_FILLED'
+__authors__ = '1630568, 1630568'
+__group__ = '2_5'
 
 import numpy as np
 import utils
@@ -30,11 +30,17 @@ class KMeans:
                     if matrix has more than 2 dimensions, the dimensionality of the sample space is the length of
                     the last dimension
         """
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        self.X = np.random.rand(100, 5)
+        
+        array_x = np.array(X)
+        
+        if array_x.dtype != np.float64:
+            array_x = array_x.astype(np.float64)
+                    
+        if array_x.ndim > 2:
+            shape = array_x.shape
+            array_x = np.reshape(array_x, (shape[0] * shape[1], shape[2]))
+        
+        self.X = array_x
 
     def _init_options(self, options=None):
         """
@@ -63,122 +69,134 @@ class KMeans:
         #############################################################
 
 
-def _init_centroids(self):
-    """
-    Initialization of centroids
-    """
-
-    #######################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #######################################################
-    if self.options['km_init'].lower() == 'first':
-        self.centroids = np.random.rand(self.K, self.X.shape[1])
-        self.old_centroids = np.random.rand(self.K, self.X.shape[1])
-    else:
-        self.centroids = np.random.rand(self.K, self.X.shape[1])
-        self.old_centroids = np.random.rand(self.K, self.X.shape[1])
-
-
-def get_labels(self):
-    """        Calculates the closest centroid of all points in X
-    and assigns each point to the closest centroid
-    """
-    #######################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #######################################################
-    self.labels = np.random.randint(self.K, size=self.X.shape[0])
-
-
-def get_centroids(self):
-    """
-    Calculates coordinates of centroids based on the coordinates of all the points assigned to the centroid
-    """
-    #######################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #######################################################
-    pass
-
-
-def converges(self):
-    """
-    Checks if there is a difference between current and old centroids
-    """
-    #######################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #######################################################
-    return True
+    def _init_centroids(self):
+        """
+        Initialization of centroids
+        """
+        self.centroids = []
+        n = 1
+        
+        match self.options['km_init']:
+            case 'random':
+                while n < self.K:
+                    x = np.random.randrange(self.K - 1)
+                    if self.add_centroids(x):
+                        n += 1
+            case 'first' | _:
+                self.centroids.append(self.X[0])
+                aux = 0
+                while n < self.K:
+                    aux += 1
+                    if self.add_centroids(aux):
+                        n += 1
+                
+    def add_centroids(self, x):
+        already = False
+        
+        for centroid in self.centroids:
+            if np.array_equal(self.X[x], centroid):
+                already = True
+        
+        if not already:# == False:
+            self.centroids.append(self.X[x])
+            return True
+        return False
+        
+    def get_labels(self):
+        """        Calculates the closest centroid of all points in X
+        and assigns each point to the closest centroid
+        """
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        self.labels = np.random.randint(self.K, size=self.X.shape[0])
 
 
-def fit(self):
-    """
-    Runs K-Means algorithm until it converges or until the number
-    of iterations is smaller than the maximum number of iterations.
-    """
-    #######################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #######################################################
-    pass
+    def get_centroids(self):
+        """
+        Calculates coordinates of centroids based on the coordinates of all the points assigned to the centroid
+        """
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        pass
 
 
-def withinClassDistance(self):
-    """
-     returns the within class distance of the current clustering
-    """
-
-    #######################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #######################################################
-    return np.random.rand()
-
-
-def find_bestK(self, max_K):
-    """
-     sets the best k anlysing the results up to 'max_K' clusters
-    """
-    #######################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #######################################################
-    pass
+    def converges(self):
+        """
+        Checks if there is a difference between current and old centroids
+        """
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        return True
 
 
-def distance(X, C):
-    """
-    Calculates the distance between each pixel and each centroid
-    Args:
-        X (numpy array): PxD 1st set of data points (usually data points)
-        C (numpy array): KxD 2nd set of data points (usually cluster centroids points)
-
-    Returns:
-        dist: PxK numpy array position ij is the distance between the
-        i-th point of the first set an the j-th point of the second set
-    """
-
-    #########################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #########################################################
-    return np.random.rand(X.shape[0], C.shape[0])
+    def fit(self):
+        """
+        Runs K-Means algorithm until it converges or until the number
+        of iterations is smaller than the maximum number of iterations.
+        """
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        pass
 
 
-def get_colors(centroids):
-    """
-    for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
-    Args:
-        centroids (numpy array): KxD 1st set of data points (usually centroid points)
+    def withinClassDistance(self):
+        """
+        returns the within class distance of the current clustering
+        """
 
-    Returns:
-        labels: list of K labels corresponding to one of the 11 basic colors
-    """
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        return np.random.rand()
 
-    #########################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #########################################################
-    return list(utils.colors)
+
+    def find_bestK(self, max_K):
+        """
+        sets the best k anlysing the results up to 'max_K' clusters
+        """
+        #######################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #######################################################
+        pass
+
+
+    def distance(X, C):
+        """
+        Calculates the distance between each pixel and each centroid
+        Args:
+            X (numpy array): PxD 1st set of data points (usually data points)
+            C (numpy array): KxD 2nd set of data points (usually cluster centroids points)
+
+        Returns:
+            dist: PxK numpy array position ij is the distance between the
+            i-th point of the first set an the j-th point of the second set
+        """
+        
+        
+
+
+    def get_colors(centroids):
+        """
+        for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
+        Args:
+            centroids (numpy array): KxD 1st set of data points (usually centroid points)
+
+        Returns:
+            labels: list of K labels corresponding to one of the 11 basic colors
+        """
+
+        #########################################################
+        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
+        ##  AND CHANGE FOR YOUR OWN CODE
+        #########################################################
+        return list(utils.colors)

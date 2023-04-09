@@ -134,17 +134,13 @@ class KMeans:
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
         self.old_centroids = self.centroids
-        new_centroids = []
-        
+        new_centroids = [[] for i in range(self.K)]
         
         for i in range(len(self.X)):
-            aux_array = []
-            aux_array.append(self.X[i])
-        
-        new_centroids.append(aux_array)
+            new_centroids[self.labels[i]].append(self.X[i])
         
         for i in range(len(new_centroids)):
-            new_centroids[i] = np.average(np.array(new_centroids[i], 0))
+            new_centroids[i] = np.average(np.array(new_centroids[i]), 0)
         
         self.centroids = new_centroids
 
@@ -156,6 +152,10 @@ class KMeans:
         ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
+        cmp = (self.centroids == self.old_centroids)
+        if not cmp.all():
+            return False
+        
         return True
 
 

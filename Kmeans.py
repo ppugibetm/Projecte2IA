@@ -1,4 +1,4 @@
-__authors__ = '1630568, 1636442'
+__authors__ = ['1630568', '1636442']
 __group__ = '2_5'
 
 import numpy as np
@@ -30,16 +30,16 @@ class KMeans:
                     if matrix has more than 2 dimensions, the dimensionality of the sample space is the length of
                     the last dimension
         """
-        
+
         array_x = np.array(X)
-        
+
         if array_x.dtype != np.float64:
             array_x = array_x.astype(np.float64)
-                    
+
         if array_x.ndim > 2:
             shape = array_x.shape
             array_x = np.reshape(array_x, (shape[0] * shape[1], shape[2]))
-        
+
         self.X = array_x
 
     def _init_options(self, options=None):
@@ -68,14 +68,13 @@ class KMeans:
         ##  THIS FUNCTION CAN BE MODIFIED FROM THIS POINT, if needed
         #############################################################
 
-
     def _init_centroids(self):
         """
         Initialization of centroids
         """
         self.centroids = []
         n = 1
-        
+
         match self.options['km_init']:
             case 'random':
                 while n < self.K:
@@ -89,19 +88,19 @@ class KMeans:
                     aux += 1
                     if self.add_centroids(aux):
                         n += 1
-                
+
     def add_centroids(self, x):
         already = False
-        
+
         for centroid in self.centroids:
             if np.array_equal(self.X[x], centroid):
                 already = True
-        
-        if not already:# == False:
+
+        if not already:  # == False:
             self.centroids.append(self.X[x])
             return True
         return False
-        
+
     def get_labels(self):
         """        Calculates the closest centroid of all points in X
         and assigns each point to the closest centroid
@@ -111,19 +110,18 @@ class KMeans:
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
         array = []
-        
+
         for i in self.X:
             min_dist = 100000000000
             n = -1
             for x, j in enumerate(self.centroids):
-                dist = np.sqrt(pow(i[0]-j[0], 2) + pow(i[1]-j[1], 2) + pow(i[2]-j[2], 2))
+                dist = np.sqrt(pow(i[0] - j[0], 2) + pow(i[1] - j[1], 2) + pow(i[2] - j[2], 2))
                 if dist < min_dist:
                     min_dist = dist
                     n = x
             array.append(n)
-                    
-        self.labels = array
 
+        self.labels = array
 
     def get_centroids(self):
         """
@@ -135,13 +133,13 @@ class KMeans:
         #######################################################
         self.old_centroids = self.centroids
         new_centroids = [[] for i in range(self.K)]
-        
+
         for i in range(len(self.X)):
             new_centroids[self.labels[i]].append(self.X[i])
-        
+
         for i in range(len(new_centroids)):
             new_centroids[i] = np.average(np.array(new_centroids[i]), 0)
-        
+
         self.centroids = new_centroids
 
     def converges(self):
@@ -155,21 +153,24 @@ class KMeans:
         cmp = (self.centroids == self.old_centroids)
         if not cmp.all():
             return False
-        
+
         return True
 
-
     def fit(self):
+        self._init_centroids()
+        i = self.options['max_iter']
+        trobat = 0
+        while i < iter and trobat == 0:
+            self.get_labels()
+            self.get_centroids()
+            if self.converges() == False:
+                trobat = 1
+            else:
+                i += 1
         """
         Runs K-Means algorithm until it converges or until the number
         of iterations is smaller than the maximum number of iterations.
         """
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        pass
-
 
     def withinClassDistance(self):
         """
@@ -181,7 +182,6 @@ class KMeans:
         ##  AND CHANGE FOR YOUR OWN CODE
         #######################################################
         return np.random.rand()
-
 
     def find_bestK(self, max_K):
         """
@@ -205,21 +205,20 @@ def distance(X, C):
         i-th point of the first set an the j-th point of the second set
     """
     dist = []
-        
+
     for i in X:
         aux_dist = []
         for j in C:
-            aux_dist.append(np.sqrt(pow(i[0]-j[0], 2) + pow(i[1]-j[1], 2) + pow(i[2]-j[2], 2)))
+            aux_dist.append(np.sqrt(pow(i[0] - j[0], 2) + pow(i[1] - j[1], 2) + pow(i[2] - j[2], 2)))
         dist.append(aux_dist)
-        
+
     dist_ = np.array(dist)
     shapeX = X.shape
     shapeC = C.shape
-    
+
     dist_ = np.reshape(dist_, (shapeX[0], shapeC[0]))
-        
+
     return dist_
-        
 
 
 def get_colors(centroids):

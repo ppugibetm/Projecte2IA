@@ -211,16 +211,10 @@ def distance(X, C):
 
 
 def get_colors(centroids):
-    """
-    for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
-    Args:
-        centroids (numpy array): KxD 1st set of data points (usually centroid points)
-    Returns:
-        labels: list of K labels corresponding to one of the 11 basic colors
-    """
-
-    #########################################################
-    ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-    ##  AND CHANGE FOR YOUR OWN CODE
-    #########################################################
-    return list(utils.colors)
+    colors = np.array(['Red', 'Orange', 'Brown', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink', 'Black', 'Grey', 'White'])
+    probabilitats = utils.get_color_prob(centroids)
+    llista_colors = []
+    for i in probabilitats:
+        maxim = np.argmax(i)
+        llista_colors.append(colors[maxim])
+    return (np.array(llista_colors))

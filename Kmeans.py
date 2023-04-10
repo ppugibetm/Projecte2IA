@@ -18,6 +18,10 @@ class KMeans:
         self.K = K
         self._init_X(X)
         self._init_options(options)  # DICT options
+        self.WCD = None
+        self.labels = None
+        self.centroids = None
+        self.old_centroids = None
 
     #############################################################
     ##  THIS FUNCTION CAN BE MODIFIED FROM THIS POINT, if needed
@@ -143,56 +147,41 @@ class KMeans:
         self.centroids = new_centroids
 
     def converges(self):
-        """
-        Checks if there is a difference between current and old centroids
-        """
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        cmp = (self.centroids == self.old_centroids)
-        if not cmp.all():
-            return False
-
-        return True
+        return np.allclose(self.centroids, self.old_centroids, atol=self.options['tolerance'])
 
     def fit(self):
         self._init_centroids()
-        i = self.options['max_iter']
-        trobat = 0
-        while i < iter and trobat == 0:
+        max_iter = self.options['max_iter']
+        trobat = False
+        while (self.num_iter <max_iter) and (trobat == False):
             self.get_labels()
             self.get_centroids()
-            if self.converges() == False:
-                trobat = 1
+            if self.converges() == True:
+                trobat = True
             else:
-                i += 1
-        """
-        Runs K-Means algorithm until it converges or until the number
-        of iterations is smaller than the maximum number of iterations.
-        """
+                self.num_iter += 1
 
     def withinClassDistance(self):
-        """
-        returns the within class distance of the current clustering
-        """
-
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        return np.random.rand()
+        dist = 0
+        for i in range(len(self.centroids)):
+            pixels_per_centroid = np.where(self.labels == i)[0]
+            dist += np.sum((self.X[pixels_per_centroid] - self.centroids[i]) ** 2)
+        return dist / len(self.X)
 
     def find_bestK(self, max_K):
-        """
-        sets the best k anlysing the results up to 'max_K' clusters
-        """
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        pass
-
+        self.K = 2
+        self.fit()
+        anterior_WCD = self.withinClassDistance()
+        for i in range(3, max_K):
+            self.K = i
+            self.fit()
+            WCD = self.withinClassDistance()
+            dec = (100 - (100 * (WCD / anterior_WCD)))
+            anterior_WCD = WCD
+            if dec < 20:
+                self.K = i - 1
+                self.fit()
+                break
 
 def distance(X, C):
     """

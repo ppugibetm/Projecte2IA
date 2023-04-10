@@ -1,5 +1,5 @@
 __authors__ = ['1630568', '1636442']
-__group__ = '2_5'
+__group__ = 'DM.12'
 
 import numpy as np
 import utils
@@ -22,7 +22,6 @@ class KMeans:
         self.labels = None
         self.centroids = None
         self.old_centroids = None
-
     #############################################################
     ##  THIS FUNCTION CAN BE MODIFIED FROM THIS POINT, if needed
     #############################################################
@@ -72,6 +71,7 @@ class KMeans:
         ##  THIS FUNCTION CAN BE MODIFIED FROM THIS POINT, if needed
         #############################################################
 
+
     def _init_centroids(self):
         """
         Initialization of centroids
@@ -92,6 +92,11 @@ class KMeans:
                     aux += 1
                     if self.add_centroids(aux):
                         n += 1
+                        
+        self.centroids = np.array(self.centroids)
+                        
+        self.old_centroids = self.centroids
+
 
     def add_centroids(self, x):
         already = False
@@ -103,7 +108,9 @@ class KMeans:
         if not already:  # == False:
             self.centroids.append(self.X[x])
             return True
+        
         return False
+
 
     def get_labels(self):
         """        Calculates the closest centroid of all points in X
@@ -115,17 +122,20 @@ class KMeans:
         #######################################################
         array = []
 
-        for i in self.X:
+        dist = distance(self.X, np.array(self.centroids))
+
+        for i in range(len(self.X)):
             min_dist = 100000000000
             n = -1
-            for x, j in enumerate(self.centroids):
-                dist = np.sqrt(pow(i[0] - j[0], 2) + pow(i[1] - j[1], 2) + pow(i[2] - j[2], 2))
-                if dist < min_dist:
-                    min_dist = dist
-                    n = x
+            for j in range(len(self.centroids)):
+                a = dist[i][j]
+                if a < min_dist:
+                    min_dist = a
+                    n = j
             array.append(n)
 
         self.labels = array
+
 
     def get_centroids(self):
         """
@@ -147,7 +157,16 @@ class KMeans:
         self.centroids = new_centroids
 
     def converges(self):
-        return np.allclose(self.centroids, self.old_centroids, atol=self.options['tolerance'])
+        """
+        Checks if there is a difference between current and old centroids
+        """
+        tolerance = self.options['tolerance']
+        for i in range(len(self.centroids)):
+            for j in range(len(self.centroids[i])):
+                if abs(self.centroids[i][j] - self.old_centroids[i][j]) > tolerance:
+                    return False
+        return True
+    
 
     def fit(self):
         self._init_centroids()
@@ -160,28 +179,50 @@ class KMeans:
                 trobat = True
             else:
                 self.num_iter += 1
+        """
+        Runs K-Means algorithm until it converges or until the number
+        of iterations is smaller than the maximum number of iterations.
+        """
 
     def withinClassDistance(self):
-        dist = 0
-        for i in range(len(self.centroids)):
-            pixels_per_centroid = np.where(self.labels == i)[0]
-            dist += np.sum((self.X[pixels_per_centroid] - self.centroids[i]) ** 2)
-        return dist / len(self.X)
+        """
+        returns the within class distance of the current clustering
+        """
+        sum = 0
+        dist = distance(self.X, self.centroids)
+        
+        for i in range(len(self.X)):
+            final_dist = pow(dist[i][self.labels[i]], 2)
+            sum += final_dist
+            
+        self.WCD = sum/len(self.X)
+            
 
     def find_bestK(self, max_K):
+        """
+        sets the best k anlysing the results up to 'max_K' clusters
+        """
         self.K = 2
         self.fit()
-        anterior_WCD = self.withinClassDistance()
-        for i in range(3, max_K):
-            self.K = i
+        self.withinClassDistance()
+        wcd = self.WCD
+        k = 3
+
+        while k <= max_K:
+
+            self.K = k
             self.fit()
-            WCD = self.withinClassDistance()
-            dec = (100 - (100 * (WCD / anterior_WCD)))
-            anterior_WCD = WCD
-            if dec < 20:
-                self.K = i - 1
-                self.fit()
+            self.withinClassDistance()
+
+            decrease = 100 * self.WCD / wcd
+
+            if 100 - decrease < 20:
+                self.K = k - 1
                 break
+
+            wcd = self.WCD
+            k += 1
+
 
 def distance(X, C):
     """
@@ -203,14 +244,21 @@ def distance(X, C):
 
     dist_ = np.array(dist)
     shapeX = X.shape
-    shapeC = C.shape
+    shapeC = len(C)
 
-    dist_ = np.reshape(dist_, (shapeX[0], shapeC[0]))
+    dist_ = np.reshape(dist_, (shapeX[0], shapeC))
 
     return dist_
 
 
 def get_colors(centroids):
+    """
+    for each row of the numpy matrix 'centroids' returns the color label following the 11 basic colors as a LIST
+    Args:
+        centroids (numpy array): KxD 1st set of data points (usually centroid points)
+    Returns:
+        labels: list of K labels corresponding to one of the 11 basic colors
+    """
     colors = np.array(['Red', 'Orange', 'Brown', 'Yellow', 'Green', 'Blue', 'Purple', 'Pink', 'Black', 'Grey', 'White'])
     probabilitats = utils.get_color_prob(centroids)
     llista_colors = []

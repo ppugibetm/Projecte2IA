@@ -1,5 +1,5 @@
-__authors__ = 'TO_BE_FILLED'
-__group__ = 'TO_BE_FILLED'
+__authors__ = ['1630568', '1636442']
+__group__ = 'DM.12'
 
 import numpy as np
 import math
@@ -21,11 +21,16 @@ class KNN:
         :param train_data: PxMxNx3 matrix corresponding to P color images
         :return: assigns the train set to the matrix self.train_data shaped as PxD (P points in a D dimensional space)
         """
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        self.train_data = np.random.randint(8, size=[10, 14400])
+        array_train = np.array(train_data)
+
+        if array_train.dtype != np.float64:
+            array_train = array_train.astype(np.float64)
+
+        if array_train.ndim > 2:
+            shape = array_train.shape
+            array_train = np.reshape(array_train, (shape[0], shape[1]*shape[2]))
+
+        self.train_data = array_train
 
     def get_k_neighbours(self, test_data, k):
         """

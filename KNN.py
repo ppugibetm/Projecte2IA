@@ -11,6 +11,7 @@ class KNN:
     def __init__(self, train_data, labels):
         self._init_train(train_data)
         self.labels = np.array(labels)
+        #self.neighbours = np
         #############################################################
         ##  THIS FUNCTION CAN BE MODIFIED FROM THIS POINT, if needed
         #############################################################
@@ -40,11 +41,30 @@ class KNN:
         :return: the matrix self.neighbors is created (NxK)
                  the ij-th entry is the j-th nearest train point to the i-th test point
         """
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        self.neighbors = np.random.randint(k, size=[test_data.shape[0], k])
+        array_train = np.array(test_data)
+
+        if array_train.dtype != np.float64:
+            array_train = array_train.astype(np.float64)
+
+        if array_train.ndim > 2:
+            shape = array_train.shape
+            array_train = np.reshape(array_train, (shape[0], shape[1]*shape[2]))
+
+        test_data = array_train
+        
+        dist = cdist(test_data, self.train_data)
+        self.neighbours = []
+           
+        for i in range(shape[0]):
+            aux_dist = sorted(dist[i])
+            indexes = []     
+            for j in range(k):
+                indexes.append(self.labels[np.where(dist[i] == aux_dist[j])[0]])
+            self.neighbours.append(indexes)
+
+        self.neighbours = np.array(self.neighbours)
+        self.neighbours = np.reshape(self.neighbours, (shape[0], k))
+
 
     def get_class(self):
         """

@@ -74,11 +74,32 @@ class KNN:
                             (i.e. the class at which that row belongs)
                 2nd array For each of the rows in self.neighbors gets the % of votes for the winning class
         """
-        #######################################################
-        ##  YOU MUST REMOVE THE REST OF THE CODE OF THIS FUNCTION
-        ##  AND CHANGE FOR YOUR OWN CODE
-        #######################################################
-        return np.random.randint(10, size=self.neighbors.size), np.random.random(self.neighbors.size)
+        total = {}
+        most_voted_for_row = []
+        
+        shape = self.neighbours.shape
+        
+        for i in range(shape[0]):
+            classes = {}
+            for j in range(len(self.neighbours[i])):
+                aux = self.neighbours[i][j]
+                if (aux in classes):
+                    classes[aux] += 1
+                    total[aux] += 1
+                else:
+                    classes[aux] = 1
+                    total[aux] = 1
+                    
+            max_value = max(classes.values())
+            
+            for n, j in enumerate(classes):
+                if (classes[j] == max_value):
+                    keys_list = list(classes.keys())
+                    most_voted_for_row.append(keys_list[n])
+                    break
+            
+        return most_voted_for_row
+
 
     def predict(self, test_data, k):
         """

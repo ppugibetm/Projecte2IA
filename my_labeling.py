@@ -19,8 +19,8 @@ def retrieval_by_color(images, labels, question):
     
     for image in range(len(images)):
         color_tag = labels[image]
-        if color_tag == question:
-            matches.append(images[image])
+        if any(color == question for color in color_tag):
+            matches.append(image)
             
     return matches
 
@@ -30,5 +30,19 @@ def retrieval_by_shape(images, labels, question):
     for image in range(len(images)):
         shape_tag = labels[image]
         if shape_tag == question:
-            matches.append(images[image])
+            matches.append(image)
             
+    return matches
+
+def retrieval_combined(images, labels_shape, labels_color, question_shape, question_color):
+    matches = []
+    
+    matches_color = retrieval_by_color(images, labels_color, question_color)
+    
+    for image in matches_color:
+        shape_tag = labels_shape[image]
+        if shape_tag == question_shape:
+            matches.append(image)
+            
+    return matches
+    

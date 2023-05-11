@@ -2,6 +2,9 @@ __authors__ = ['1630568', '1636442']
 __group__ = 'DM.12'
 
 from utils_data import read_dataset
+import time
+import numpy as np
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
 
@@ -45,4 +48,47 @@ def retrieval_combined(images, labels_shape, labels_color, question_shape, quest
             matches.append(image)
             
     return matches
+
+
+def Kmean_statistics(kmeans_list, Kmax):
+    wcd_lists = [[] for i in range(len(kmeans_list))]
+    time_lists = [[] for i in range(len(kmeans_list))]
+    n_iters_list = list(range(2, Kmax + 1))
     
+    for i, kmeans in enumerate(kmeans_list):
+        wcd_list = []
+        time_list = []
+        
+        for k in range(2, Kmax + 1):
+            kmeans.K = k
+            start = time.time()
+            kmeans.fit()
+            end = time.time()
+            
+            wcd_list.append(kmeans.WCD)
+            time_list.append(end - start)
+        
+        wcd_lists[i] = wcd_list
+        time_lists[i] = time_list
+    
+    plt.figure("Kmean statistics")
+    
+    plt.subplot(2, 1, 1)
+    for i, wcd_list in enumerate(wcd_lists):
+        plt.plot(n_iters_list, wcd_list, label=f'KMeans {i+1}')
+    
+    plt.xlabel('K')
+    plt.ylabel('WCD')
+    plt.legend()
+    
+    plt.subplot(2, 1, 2)
+    for kmeans_index, time_list in enumerate(time_lists):
+        plt.plot(n_iters_list, time_list, label=f'KMeans {kmeans_index+1}')
+    
+    plt.xlabel('K')
+    plt.ylabel('Computation Time (s)')
+    plt.legend()
+    
+    plt.tight_layout()
+    plt.show()
+

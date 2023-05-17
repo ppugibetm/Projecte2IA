@@ -91,4 +91,25 @@ def Kmean_statistics(kmeans_list, Kmax):
     
     plt.tight_layout()
     plt.show()
+    
+
+def get_shape_accuracy(labels, gt):
+    errors = 0
+    for i, label in enumerate(labels):
+        if label != gt[i]:
+            errors += 1
+    
+    return (1 - (errors/len(labels))) * 100
+
+
+def get_color_accuracy(labels, gt):
+    errors = 0
+    total_len = 0
+    for i, label in enumerate(labels):
+        for x in label:
+            total_len += 1
+            if x not in gt[i]:
+                errors += 1
+    per = round((1 - (errors/total_len)) * 100, 2)
+    return per
 

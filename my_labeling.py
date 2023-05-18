@@ -23,7 +23,7 @@ def retrieval_by_color(images, labels, question):
     for image in range(len(images)):
         color_tag = labels[image]
         if any(color == question for color in color_tag):
-            matches.append(image)
+            matches.append(images[image])
             
     return matches
 
@@ -33,7 +33,7 @@ def retrieval_by_shape(images, labels, question):
     for image in range(len(images)):
         shape_tag = labels[image]
         if shape_tag == question:
-            matches.append(image)
+            matches.append(images[image])
             
     return matches
 
@@ -45,7 +45,7 @@ def retrieval_combined(images, labels_shape, labels_color, question_shape, quest
     for image in matches_color:
         shape_tag = labels_shape[image]
         if shape_tag == question_shape:
-            matches.append(image)
+            matches.append(images[image])
             
     return matches
 
@@ -99,7 +99,7 @@ def get_shape_accuracy(labels, gt):
         if label != gt[i]:
             errors += 1
     
-    return (1 - (errors/len(labels))) * 100
+    return round((1 - (errors/len(labels))) * 100, 2)
 
 
 def get_color_accuracy(labels, gt):
@@ -110,6 +110,5 @@ def get_color_accuracy(labels, gt):
             total_len += 1
             if x not in gt[i]:
                 errors += 1
-    per = round((1 - (errors/total_len)) * 100, 2)
-    return per
+    return round((1 - (errors/total_len)) * 100, 2)
 

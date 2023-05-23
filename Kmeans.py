@@ -4,6 +4,7 @@ __group__ = 'DM.12'
 import numpy as np
 import utils
 from math import floor
+import math
 
 
 class KMeans:
@@ -54,7 +55,7 @@ class KMeans:
         if options is None:
             options = {}
         if 'km_init' not in options:
-            options['km_init'] = 'random'
+            options['km_init'] = 'first'
         if 'verbose' not in options:
             options['verbose'] = False
         if 'tolerance' not in options:
@@ -77,12 +78,12 @@ class KMeans:
         Initialization of centroids
         """
         self.centroids = []
-        n = 1
+        n = 0
 
         match self.options['km_init']:
             case 'random':
                 while n < self.K:
-                    x = np.random.randrange(self.K - 1)
+                    x = np.random.randint(len(self.X))
                     if self.add_centroids(x):
                         n += 1
                         
@@ -100,6 +101,7 @@ class KMeans:
             case 'first' | _:
                 self.centroids.append(self.X[0])
                 aux = 0
+                n = 1
                 while n < self.K:
                     aux += 1
                     if self.add_centroids(aux):
@@ -187,7 +189,7 @@ class KMeans:
         while (self.num_iter < max_iter) and (trobat == False):
             self.get_labels()
             self.get_centroids()
-            self.withinClassDistance()
+            self.fisherCoefficient()
             if self.converges() == True:
                 trobat = True
             else:
@@ -212,24 +214,16 @@ class KMeans:
         
     
     def interClassDistance(self):
-        dist = distance(self.centroids, self.centroids)
-        np.fill_diagonal(dist, np.inf)
+        dist = distance(self.X, self.centroids)
         max_dist = np.max(dist)
         self.ICD = max_dist
         
 
     def fisherCoefficient(self):
-        dist = distance(self.X, self.centroids)
-        labels = np.argmin(dist, axis=1)
-        within_cluster_distances = np.zeros(self.K)
-        between_cluster_distances = np.zeros(self.K)
+        self.withinClassDistance()
+        self.interClassDistance()
 
-        for i in range(self.K):
-            cluster_points = self.X[labels == i]
-            within_cluster_distances[i] = np.mean(distance(cluster_points, [self.centroids[i]]))
-            between_cluster_distances[i] = np.mean(distance(cluster_points, self.centroids[np.arange(self.K) != i]))
-
-        self.fisher = np.sum(within_cluster_distances) / np.sum(between_cluster_distances)
+        self.fisher = self.WCD/self.ICD
 
 
     def find_bestK(self, max_K):
@@ -273,14 +267,16 @@ def distance(X, C):
     for i in X:
         aux_dist = []
         for j in C:
-            aux_dist.append(np.sqrt(pow(i[0] - j[0], 2) + pow(i[1] - j[1], 2) + pow(i[2] - j[2], 2)))
+            if not isinstance(j, float):
+                aux_dist.append(np.sqrt(pow(i[0] - j[0], 2) + pow(i[1] - j[1], 2) + pow(i[2] - j[2], 2)))
+                
         dist.append(aux_dist)
 
     dist_ = np.array(dist)
-    shapeX = X.shape
+    shapeX = X.shape[0]
     shapeC = len(C)
 
-    dist_ = np.reshape(dist_, (shapeX[0], shapeC))
+    dist_ = np.reshape(dist_, (shapeX, shapeC))
 
     return dist_
 

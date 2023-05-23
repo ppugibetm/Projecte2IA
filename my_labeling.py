@@ -1,7 +1,7 @@
 __authors__ = ['1630568', '1636442']
 __group__ = 'DM.12'
 
-from utils_data import read_dataset
+from utils_data import *
 import time
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,6 +25,7 @@ def retrieval_by_color(images, labels, question):
         if any(color == question for color in color_tag):
             matches.append(images[image])
             
+    #visualize_retrieval(matches, len(matches))
     return matches
 
 def retrieval_by_shape(images, labels, question):
@@ -35,6 +36,7 @@ def retrieval_by_shape(images, labels, question):
         if shape_tag == question:
             matches.append(images[image])
             
+    #visualize_retrieval(matches, len(matches))
     return matches
 
 def retrieval_combined(images, labels_shape, labels_color, question_shape, question_color):
@@ -42,7 +44,7 @@ def retrieval_combined(images, labels_shape, labels_color, question_shape, quest
     
     matches_color = retrieval_by_color(images, labels_color, question_color)
     
-    for image in matches_color:
+    for image in range(len(matches_color)):
         shape_tag = labels_shape[image]
         if shape_tag == question_shape:
             matches.append(images[image])
@@ -65,7 +67,7 @@ def Kmean_statistics(kmeans_list, Kmax):
             kmeans.fit()
             end = time.time()
             
-            wcd_list.append(kmeans.WCD)
+            wcd_list.append(kmeans.fisher)
             time_list.append(end - start)
         
         wcd_lists[i] = wcd_list
@@ -78,7 +80,7 @@ def Kmean_statistics(kmeans_list, Kmax):
         plt.plot(n_iters_list, wcd_list, label=f'KMeans {i+1}')
     
     plt.xlabel('K')
-    plt.ylabel('WCD')
+    plt.ylabel('Fisher')
     plt.legend()
     
     plt.subplot(2, 1, 2)
